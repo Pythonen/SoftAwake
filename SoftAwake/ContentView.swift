@@ -10,12 +10,15 @@ import SwiftUI
 struct ContentView: View {
     var body: some View {
         VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+            HStack {
+                Image(systemName: "alarm")
+                    .imageScale(.large)
+                    .foregroundStyle(.tint)
+                Text("Set a time for soft awakening")
+            }
+            .padding()
+            ClockInput()
         }
-        .padding()
     }
 }
 
