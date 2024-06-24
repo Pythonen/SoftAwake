@@ -71,12 +71,6 @@ struct ClockInput: View {
                 CustomNumberPicker(selectedNumber: $minutes, range: 0...59)
                     .frame(width: 100, height: 200)
             }
-//            Button("Set", systemImage: "bed.double.fill", action: setWakeTime)
-//                .background(.blue)
-//                .foregroundColor(.white)
-//                .padding()
-//                .buttonStyle(.borderedProminent)
-//                .buttonBorderShape(.capsule)
             Button {
                 
             } label: {
