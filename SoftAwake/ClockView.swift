@@ -7,8 +7,10 @@
 
 import SwiftUI
 
-struct ContentView: View {
+struct ClockView: View {
     var body: some View {
+        NavigationStack {
+            
         VStack {
             HStack {
                 Image(systemName: "alarm")
@@ -19,9 +21,10 @@ struct ContentView: View {
             .padding()
             ClockInput()
         }
+        }
     }
 }
 
 #Preview {
-    ContentView()
+    ClockView()
 }

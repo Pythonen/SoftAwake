@@ -8,19 +8,21 @@
 
 /* Begin PBXBuildFile section */
 		B3F6AA992C2A0358004922C1 /* SoftAwakeApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3F6AA982C2A0358004922C1 /* SoftAwakeApp.swift */; };
-		B3F6AA9B2C2A0358004922C1 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3F6AA9A2C2A0358004922C1 /* ContentView.swift */; };
+		B3F6AA9B2C2A0358004922C1 /* ClockView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3F6AA9A2C2A0358004922C1 /* ClockView.swift */; };
 		B3F6AA9D2C2A0359004922C1 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B3F6AA9C2C2A0359004922C1 /* Assets.xcassets */; };
 		B3F6AAA02C2A0359004922C1 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B3F6AA9F2C2A0359004922C1 /* Preview Assets.xcassets */; };
 		B3F6AAA72C2A0AE2004922C1 /* ClockInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3F6AAA62C2A0AE2004922C1 /* ClockInput.swift */; };
+		B3F6AAA92C2B087D004922C1 /* AlarmListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3F6AAA82C2B087D004922C1 /* AlarmListView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		B3F6AA952C2A0358004922C1 /* SoftAwake.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SoftAwake.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B3F6AA982C2A0358004922C1 /* SoftAwakeApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoftAwakeApp.swift; sourceTree = "<group>"; };
-		B3F6AA9A2C2A0358004922C1 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		B3F6AA9A2C2A0358004922C1 /* ClockView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClockView.swift; sourceTree = "<group>"; };
 		B3F6AA9C2C2A0359004922C1 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		B3F6AA9F2C2A0359004922C1 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		B3F6AAA62C2A0AE2004922C1 /* ClockInput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClockInput.swift; sourceTree = "<group>"; };
+		B3F6AAA82C2B087D004922C1 /* AlarmListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlarmListView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -54,10 +56,11 @@
 			isa = PBXGroup;
 			children = (
 				B3F6AA982C2A0358004922C1 /* SoftAwakeApp.swift */,
-				B3F6AA9A2C2A0358004922C1 /* ContentView.swift */,
+				B3F6AA9A2C2A0358004922C1 /* ClockView.swift */,
 				B3F6AA9C2C2A0359004922C1 /* Assets.xcassets */,
 				B3F6AA9E2C2A0359004922C1 /* Preview Content */,
 				B3F6AAA62C2A0AE2004922C1 /* ClockInput.swift */,
+				B3F6AAA82C2B087D004922C1 /* AlarmListView.swift */,
 			);
 			path = SoftAwake;
 			sourceTree = "<group>";
@@ -140,8 +143,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B3F6AA9B2C2A0358004922C1 /* ContentView.swift in Sources */,
+				B3F6AA9B2C2A0358004922C1 /* ClockView.swift in Sources */,
 				B3F6AA992C2A0358004922C1 /* SoftAwakeApp.swift in Sources */,
+				B3F6AAA92C2B087D004922C1 /* AlarmListView.swift in Sources */,
 				B3F6AAA72C2A0AE2004922C1 /* ClockInput.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
