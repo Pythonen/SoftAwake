@@ -13,6 +13,8 @@
 		B3F6AAA02C2A0359004922C1 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B3F6AA9F2C2A0359004922C1 /* Preview Assets.xcassets */; };
 		B3F6AAA72C2A0AE2004922C1 /* ClockInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3F6AAA62C2A0AE2004922C1 /* ClockInput.swift */; };
 		B3F6AAA92C2B087D004922C1 /* AlarmListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3F6AAA82C2B087D004922C1 /* AlarmListView.swift */; };
+		B3F6AAAD2C2DC53A004922C1 /* AlarmModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3F6AAAC2C2DC53A004922C1 /* AlarmModel.swift */; };
+		B3F6AAAF2C2DC542004922C1 /* AlarmManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3F6AAAE2C2DC542004922C1 /* AlarmManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -23,6 +25,9 @@
 		B3F6AA9F2C2A0359004922C1 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		B3F6AAA62C2A0AE2004922C1 /* ClockInput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClockInput.swift; sourceTree = "<group>"; };
 		B3F6AAA82C2B087D004922C1 /* AlarmListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlarmListView.swift; sourceTree = "<group>"; };
+		B3F6AAAC2C2DC53A004922C1 /* AlarmModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlarmModel.swift; sourceTree = "<group>"; };
+		B3F6AAAE2C2DC542004922C1 /* AlarmManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlarmManager.swift; sourceTree = "<group>"; };
+		B3F6AAB02C2DD8CC004922C1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -55,6 +60,8 @@
 		B3F6AA972C2A0358004922C1 /* SoftAwake */ = {
 			isa = PBXGroup;
 			children = (
+				B3F6AAB02C2DD8CC004922C1 /* Info.plist */,
+				B3F6AAAA2C2DC519004922C1 /* Modules */,
 				B3F6AA982C2A0358004922C1 /* SoftAwakeApp.swift */,
 				B3F6AA9A2C2A0358004922C1 /* ClockView.swift */,
 				B3F6AA9C2C2A0359004922C1 /* Assets.xcassets */,
@@ -71,6 +78,23 @@
 				B3F6AA9F2C2A0359004922C1 /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		B3F6AAAA2C2DC519004922C1 /* Modules */ = {
+			isa = PBXGroup;
+			children = (
+				B3F6AAAB2C2DC52F004922C1 /* Alarm */,
+			);
+			path = Modules;
+			sourceTree = "<group>";
+		};
+		B3F6AAAB2C2DC52F004922C1 /* Alarm */ = {
+			isa = PBXGroup;
+			children = (
+				B3F6AAAC2C2DC53A004922C1 /* AlarmModel.swift */,
+				B3F6AAAE2C2DC542004922C1 /* AlarmManager.swift */,
+			);
+			path = Alarm;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -143,10 +167,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B3F6AAAD2C2DC53A004922C1 /* AlarmModel.swift in Sources */,
 				B3F6AA9B2C2A0358004922C1 /* ClockView.swift in Sources */,
 				B3F6AA992C2A0358004922C1 /* SoftAwakeApp.swift in Sources */,
 				B3F6AAA92C2B087D004922C1 /* AlarmListView.swift in Sources */,
 				B3F6AAA72C2A0AE2004922C1 /* ClockInput.swift in Sources */,
+				B3F6AAAF2C2DC542004922C1 /* AlarmManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -283,6 +309,7 @@
 				DEVELOPMENT_TEAM = 8932JCANDT;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = SoftAwake/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -312,6 +339,7 @@
 				DEVELOPMENT_TEAM = 8932JCANDT;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = SoftAwake/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;

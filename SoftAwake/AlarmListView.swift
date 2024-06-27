@@ -9,51 +9,39 @@ import Foundation
 import SwiftUI
 
 struct AlarmListView: View {
-    @State private var wakeUpTimes: [(key: String, value: String, isOn: Bool)] = []
+    @StateObject private var alarmManager = AlarmManager()
     var body: some View {
-        VStack {
-            List {
-                ForEach(wakeUpTimes.indices, id: \.self) { index in
-                    Toggle(isOn: $wakeUpTimes[index].isOn) {
-                        HStack {
-                            Text(wakeUpTimes[index].value)
-                                .font(.subheadline)
-                                .foregroundColor(wakeUpTimes[index].isOn ? .black : .gray)
-                        }
+            NavigationView {
+                List {
+                    ForEach(alarmManager.alarms) { alarm in
+                        AlarmRow(alarm: alarm, toggleAction: {
+                            alarmManager.toggleAlarm(alarm)
+                        })
                     }
-                    .onChange(of: wakeUpTimes[index].isOn) { oldValue,  newValue in
-                        updateToggleState(at: index, to: newValue)
-                    }
+                    .onDelete(perform: alarmManager.deleteAlarm)
                 }
-                .onDelete(perform: delete)
             }
+            .navigationTitle("Alarms")
         }
-        .onAppear(perform: loadWakeUpTimes)
-        .navigationTitle("Alarm List")
-    }
-    func loadWakeUpTimes(){
-        let userDefaults = UserDefaults.standard
-        let dictionary = userDefaults.dictionaryRepresentation()
-        let timeFormatRegex = try! NSRegularExpression(pattern: "^\\d{2}:\\d{2}$")
-        
-        wakeUpTimes = dictionary.compactMap { key, value in
-            if let stringValue = value as? String,
-               timeFormatRegex.firstMatch(in: stringValue, options: [], range: NSRange(location: 0, length: stringValue.utf16.count)) != nil {
-                let isOn = userDefaults.bool(forKey: "\(key)_toggle")
-                return (key, stringValue, isOn)
+}
+
+struct AlarmRow: View {
+    var alarm: Alarm
+    var toggleAction: () -> Void
+    
+    var body: some View {
+        HStack {
+            Text(alarm.value)
+                .font(.subheadline)
+                .foregroundColor(alarm.isOn ? .black : .gray)
+            Spacer()
+            Toggle(isOn: Binding(
+                get: { alarm.isOn },
+                set: { _ in toggleAction() }
+            )) {
+                Text("Enabled")
             }
-            return nil
+            .labelsHidden()
         }
-    }
-    func delete(at offsets: IndexSet) {
-        offsets.forEach { index in
-            let key = wakeUpTimes[index].key
-            UserDefaults.standard.removeObject(forKey: key)
-        }
-        wakeUpTimes.remove(atOffsets: offsets)
-    }
-    func updateToggleState(at index: Int, to newValue: Bool) {
-        let key = wakeUpTimes[index].key
-        UserDefaults.standard.set(newValue, forKey: "\(key)_toggle")
     }
 }

@@ -60,6 +60,8 @@ struct ClockInput: View {
     @State private var minutes: Int = 0
     @State private var wakeUpTime: String = UserDefaults.standard.string(forKey: "wakeuptime") ?? ""
     @State private var isListView = false
+    @StateObject private var alarmManager = AlarmManager()
+
     
     var body: some View {
             VStack {
@@ -72,20 +74,6 @@ struct ClockInput: View {
                     CustomNumberPicker(selectedNumber: $minutes, range: 0...59)
                         .frame(width: 100, height: 200)
                 }
-//                 NavigationLink(destination: AlarmListView()) {
-//                    Button {
-//    //                    let timeString = "\(hours):\(minutes)"
-//    //                    UserDefaults.standard.set(timeString, forKey: "wakeuptime")
-//                        isListView = true
-//                    } label: {
-//                        HStack {
-//                            Image(systemName: "bed.double.fill")
-//                            Text("Set your wake up time")
-//                        }.padding()
-//                    }
-//                        .buttonStyle(.borderedProminent)
-//                    
-//                }
                 NavigationLink(destination: AlarmListView()) {
                                 HStack {
                                     Image(systemName: "bed.double.fill")
@@ -97,8 +85,7 @@ struct ClockInput: View {
                                 .cornerRadius(10)
                             }
                             .simultaneousGesture(TapGesture().onEnded {
-                                let timeString = String(format: "%02d:%02d", hours, minutes)
-                                UserDefaults.standard.set(timeString, forKey: timeString)
+                                alarmManager.addAlarm(hours: hours, minutes: minutes)
                             })
                             .buttonStyle(.borderedProminent)
                             .padding()
