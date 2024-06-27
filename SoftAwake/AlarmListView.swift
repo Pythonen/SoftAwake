@@ -10,6 +10,7 @@ import SwiftUI
 
 struct AlarmListView: View {
     @StateObject private var alarmManager = AlarmManager()
+
     var body: some View {
             NavigationView {
                 List {
@@ -28,12 +29,13 @@ struct AlarmListView: View {
 struct AlarmRow: View {
     var alarm: Alarm
     var toggleAction: () -> Void
-    
+    @Environment(\.colorScheme) var colorScheme
+
     var body: some View {
         HStack {
             Text(alarm.value)
                 .font(.subheadline)
-                .foregroundColor(alarm.isOn ? .black : .gray)
+                .foregroundColor(alarm.isOn ? (colorScheme == .dark ? .white : .black) : .gray)
             Spacer()
             Toggle(isOn: Binding(
                 get: { alarm.isOn },
