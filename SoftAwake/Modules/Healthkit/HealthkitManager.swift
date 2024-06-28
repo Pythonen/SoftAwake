@@ -97,7 +97,6 @@ class HealthKitManager: ObservableObject {
     }
     private func checkSleepStateAndSchedule(alarm: Alarm) {
         fetchSleepData { samples in
-            print("---------SAMPLES: ", samples)
             guard let samples = samples else { return }
             
             if samples.last(where: { $0.value == HKCategoryValueSleepAnalysis.asleepCore.rawValue || $0.value == HKCategoryValueSleepAnalysis.asleepUnspecified.rawValue }) != nil {
