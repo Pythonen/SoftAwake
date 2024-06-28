@@ -15,6 +15,7 @@
 		B3F6AAA92C2B087D004922C1 /* AlarmListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3F6AAA82C2B087D004922C1 /* AlarmListView.swift */; };
 		B3F6AAAD2C2DC53A004922C1 /* AlarmModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3F6AAAC2C2DC53A004922C1 /* AlarmModel.swift */; };
 		B3F6AAAF2C2DC542004922C1 /* AlarmManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3F6AAAE2C2DC542004922C1 /* AlarmManager.swift */; };
+		B3F6AAB42C2EB8FB004922C1 /* HealthkitManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3F6AAB32C2EB8FB004922C1 /* HealthkitManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -28,6 +29,8 @@
 		B3F6AAAC2C2DC53A004922C1 /* AlarmModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlarmModel.swift; sourceTree = "<group>"; };
 		B3F6AAAE2C2DC542004922C1 /* AlarmManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlarmManager.swift; sourceTree = "<group>"; };
 		B3F6AAB02C2DD8CC004922C1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		B3F6AAB12C2DFBFB004922C1 /* SoftAwake.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = SoftAwake.entitlements; sourceTree = "<group>"; };
+		B3F6AAB32C2EB8FB004922C1 /* HealthkitManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthkitManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -60,6 +63,7 @@
 		B3F6AA972C2A0358004922C1 /* SoftAwake */ = {
 			isa = PBXGroup;
 			children = (
+				B3F6AAB12C2DFBFB004922C1 /* SoftAwake.entitlements */,
 				B3F6AAB02C2DD8CC004922C1 /* Info.plist */,
 				B3F6AAAA2C2DC519004922C1 /* Modules */,
 				B3F6AA982C2A0358004922C1 /* SoftAwakeApp.swift */,
@@ -83,6 +87,7 @@
 		B3F6AAAA2C2DC519004922C1 /* Modules */ = {
 			isa = PBXGroup;
 			children = (
+				B3F6AAB22C2EB8EE004922C1 /* Healthkit */,
 				B3F6AAAB2C2DC52F004922C1 /* Alarm */,
 			);
 			path = Modules;
@@ -95,6 +100,14 @@
 				B3F6AAAE2C2DC542004922C1 /* AlarmManager.swift */,
 			);
 			path = Alarm;
+			sourceTree = "<group>";
+		};
+		B3F6AAB22C2EB8EE004922C1 /* Healthkit */ = {
+			isa = PBXGroup;
+			children = (
+				B3F6AAB32C2EB8FB004922C1 /* HealthkitManager.swift */,
+			);
+			path = Healthkit;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -167,6 +180,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B3F6AAB42C2EB8FB004922C1 /* HealthkitManager.swift in Sources */,
 				B3F6AAAD2C2DC53A004922C1 /* AlarmModel.swift in Sources */,
 				B3F6AA9B2C2A0358004922C1 /* ClockView.swift in Sources */,
 				B3F6AA992C2A0358004922C1 /* SoftAwakeApp.swift in Sources */,
@@ -303,6 +317,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = SoftAwake/SoftAwake.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"SoftAwake/Preview Content\"";
@@ -333,6 +348,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = SoftAwake/SoftAwake.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"SoftAwake/Preview Content\"";

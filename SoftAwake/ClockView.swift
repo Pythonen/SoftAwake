@@ -8,6 +8,9 @@
 import SwiftUI
 
 struct ClockView: View {
+    @StateObject private var alarmManager = AlarmManager()
+    @State private var successAuth = false
+    
     var body: some View {
         NavigationStack {
             VStack {
@@ -32,6 +35,23 @@ struct ClockView: View {
                 .buttonStyle(.borderedProminent)
                 .padding()
             }
+            Button("Request HealthKit Authorization") {
+                alarmManager.healthKitManager.requestAuthorization { success in
+                    DispatchQueue.main.async {
+                        successAuth = success
+                    }
+                    if success {
+                        print("Authorization successful")
+                    } else {
+                        print("Authorization failed")
+                    }
+                }
+            }
+            .opacity(successAuth ? 0 : 1)
+            .disabled(successAuth)
+        }
+        .onAppear {
+            successAuth = alarmManager.healthKitManager.checkIfPermissionGranted()
         }
     }
 }

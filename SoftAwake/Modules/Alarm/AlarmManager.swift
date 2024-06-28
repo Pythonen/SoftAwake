@@ -9,6 +9,8 @@ import Foundation
 import UserNotifications
 
 class AlarmManager: ObservableObject {
+    
+    var timers: [UUID: Timer] = [:]
     @Published var alarms: [Alarm] {
         didSet {
             saveAlarms()
@@ -16,8 +18,10 @@ class AlarmManager: ObservableObject {
     }
     
     private let userDefaults = UserDefaults.standard
-    private let notificationCenter = UNUserNotificationCenter.current()
-    
+    let notificationCenter = UNUserNotificationCenter.current()
+    lazy var healthKitManager: HealthKitManager = {
+        return HealthKitManager(alarmManager: self)
+    }()
     init() {
         self.alarms = AlarmManager.loadAlarms()
         scheduleAllAlarms()
@@ -35,6 +39,7 @@ class AlarmManager: ObservableObject {
             let alarm = alarms[index]
             notificationCenter.removePendingNotificationRequests(withIdentifiers: [alarm.id.uuidString])
             alarms.remove(at: index)
+            cancelSleepDataFetch(for: alarm)
         }
     }
     
@@ -45,6 +50,7 @@ class AlarmManager: ObservableObject {
                 scheduleAlarm(alarms[index])
             } else {
                 notificationCenter.removePendingNotificationRequests(withIdentifiers: [alarms[index].id.uuidString])
+                cancelSleepDataFetch(for: alarms[index])
             }
         }
     }
@@ -58,12 +64,13 @@ class AlarmManager: ObservableObject {
     }
     
     private func scheduleAlarm(_ alarm: Alarm) {
+        healthKitManager.scheduleFetchSleepData(alarm: alarm)
         let content = UNMutableNotificationContent()
         content.title = "Alarm"
         content.body = "Time to wake up!"
-        content.sound = .defaultCritical
+        content.sound = .defaultRingtone
         content.categoryIdentifier = "Alarm"
-        if let (hours, minutes) = parseTimeString(alarm.value) {
+        if let (hours, minutes) = AlarmManager.parseTimeString(alarm.value) {
             var dateComponents = DateComponents()
             dateComponents.hour = hours
             dateComponents.minute = minutes
@@ -79,20 +86,19 @@ class AlarmManager: ObservableObject {
         }
     }
     private static func loadAlarms() -> [Alarm] {
-            guard let data = UserDefaults.standard.data(forKey: "alarms"),
-                  let alarms = try? JSONDecoder().decode([Alarm].self, from: data) else {
-                return []
-            }
-            print(alarms)
-            return alarms
+        guard let data = UserDefaults.standard.data(forKey: "alarms"),
+              let alarms = try? JSONDecoder().decode([Alarm].self, from: data) else {
+            return []
         }
+        return alarms
+    }
     
     private func saveAlarms() {
         if let data = try? JSONEncoder().encode(alarms) {
             userDefaults.set(data, forKey: "alarms")
         }
     }
-    private func parseTimeString(_ timeString: String) -> (hours: Int, minutes: Int)? {
+    static func parseTimeString(_ timeString: String) -> (hours: Int, minutes: Int)? {
         let components = timeString.split(separator: ":")
         if components.count == 2,
            let hours = Int(components[0]),
@@ -100,6 +106,27 @@ class AlarmManager: ObservableObject {
             return (hours, minutes)
         } else {
             return nil
+        }
+    }
+    func triggerAlarm(alarm: Alarm) {
+        let content = UNMutableNotificationContent()
+        content.title = "Wake Up"
+        content.body = "Time to wake up!"
+        content.sound = .default
+        
+        let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: nil)
+        cancelSleepDataFetch(for: alarm)
+        notificationCenter.add(request) { error in
+            if let error = error {
+                print("Error triggering alarm: \(error.localizedDescription)")
+            }
+        }
+    }
+    func cancelSleepDataFetch(for alarm: Alarm) {
+        if let timer = timers[alarm.id] {
+            timer.invalidate()
+            print("Invalidated timer: ", timer)
+            timers.removeValue(forKey: alarm.id)
         }
     }
 }
