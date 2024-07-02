@@ -100,16 +100,21 @@ class HealthKitManager: ObservableObject {
     private func checkSleepStateAndSchedule(alarm: Alarm) {
         fetchSleepData { samples in
             guard let samples = samples else { return }
-            
+            let work = DispatchWorkItem(block: {
+                self.checkSleepStateAndSchedule(alarm: alarm)
+            })
             if samples.last(where: { $0.value == HKCategoryValueSleepAnalysis.asleepCore.rawValue || $0.value == HKCategoryValueSleepAnalysis.asleepUnspecified.rawValue }) != nil {
                 // Light sleep found, play alarm
                 print("Light sleep sample found: \(samples)")
                 self.alarmManager.triggerAlarm(alarm: alarm)
+                work.cancel()
             } else {
                 // No light sleep found, reschedule after a short interval
                 print("No light sleep sample found: \(samples)")
-                DispatchQueue.main.asyncAfter(deadline: .now() + 5 * 60) {
-                    self.checkSleepStateAndSchedule(alarm: alarm)
+                
+                DispatchQueue.main.asyncAfter(deadline: .now() + 5 * 60, execute: work)
+                if (self.alarmManager.timers[alarm.id] == nil) {
+                    work.cancel()
                 }
             }
         }
