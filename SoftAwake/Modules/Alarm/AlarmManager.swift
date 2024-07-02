@@ -22,6 +22,7 @@ class AlarmManager: ObservableObject {
     lazy var healthKitManager: HealthKitManager = {
         return HealthKitManager(alarmManager: self)
     }()
+    
     init() {
         self.alarms = AlarmManager.loadAlarms()
         scheduleAllAlarms()
@@ -81,10 +82,13 @@ class AlarmManager: ObservableObject {
             notificationCenter.add(request) { error in
                 if let error = error {
                     print("Error scheduling alarm: \(error.localizedDescription)")
+                } else {
+                    print("Scheduled alarm: \(alarm)")
                 }
             }
         }
     }
+    
     private static func loadAlarms() -> [Alarm] {
         guard let data = UserDefaults.standard.data(forKey: "alarms"),
               let alarms = try? JSONDecoder().decode([Alarm].self, from: data) else {
@@ -96,8 +100,8 @@ class AlarmManager: ObservableObject {
     private func saveAlarms() {
         if let data = try? JSONEncoder().encode(alarms) {
             userDefaults.set(data, forKey: "alarms")
-        }
-    }
+        }     }
+    
     static func parseTimeString(_ timeString: String) -> (hours: Int, minutes: Int)? {
         let components = timeString.split(separator: ":")
         if components.count == 2,
@@ -108,6 +112,7 @@ class AlarmManager: ObservableObject {
             return nil
         }
     }
+    
     func triggerAlarm(alarm: Alarm) {
         let content = UNMutableNotificationContent()
         content.title = "Wake Up"
@@ -119,13 +124,15 @@ class AlarmManager: ObservableObject {
         notificationCenter.add(request) { error in
             if let error = error {
                 print("Error triggering alarm: \(error.localizedDescription)")
+            } else {
+                print("Triggered alarm: \(alarm)")
             }
         }
     }
+    
     func cancelSleepDataFetch(for alarm: Alarm) {
         if let timer = timers[alarm.id] {
             timer.invalidate()
-            print("Invalidated timer: ", timer)
             timers.removeValue(forKey: alarm.id)
         }
     }

@@ -5,12 +5,11 @@
 //  Created by Aleksi Puttonen on 28.6.2024.
 //
 
+// HealthkitManager.swift
 import Foundation
-
 import HealthKit
 import SwiftUI
 import UserNotifications
-
 
 class HealthKitManager: ObservableObject {
     let healthStore = HKHealthStore()
@@ -73,8 +72,9 @@ class HealthKitManager: ObservableObject {
         calendar.timeZone = getCurrentTimeZone()
 
         let now = Date()
-        print(now)
-        print(calendar.timeZone)
+        print("Current date: \(now)")
+        print("Time zone: \(calendar.timeZone)")
+        
         let (hours, minutes) = AlarmManager.parseTimeString(alarm.value)!
         let alarmDateComponents = DateComponents(hour: hours, minute: minutes)
         
@@ -86,7 +86,8 @@ class HealthKitManager: ObservableObject {
             print("Error calculating fetchDate.")
             return
         }
-        print("Scheduled fetching sleep data on: ", fetchDate)
+        print("Scheduled fetching sleep data on: \(fetchDate)")
+        
         let timeInterval = fetchDate.timeIntervalSince(now)
         if timeInterval > 0 {
             let timer = Timer.scheduledTimer(withTimeInterval: timeInterval, repeats: false) { _ in
@@ -95,31 +96,30 @@ class HealthKitManager: ObservableObject {
             alarmManager.timers[alarm.id] = timer
         }
     }
+    
     private func checkSleepStateAndSchedule(alarm: Alarm) {
         fetchSleepData { samples in
             guard let samples = samples else { return }
             
             if samples.last(where: { $0.value == HKCategoryValueSleepAnalysis.asleepCore.rawValue || $0.value == HKCategoryValueSleepAnalysis.asleepUnspecified.rawValue }) != nil {
                 // Light sleep found, play alarm
-                print("Light sleep sample found: ", samples)
+                print("Light sleep sample found: \(samples)")
                 self.alarmManager.triggerAlarm(alarm: alarm)
             } else {
                 // No light sleep found, reschedule after a short interval
-                print("No light sleep sample found: ", samples)
-                Timer.scheduledTimer(withTimeInterval: 5 * 60, repeats: false) { _ in
+                print("No light sleep sample found: \(samples)")
+                DispatchQueue.main.asyncAfter(deadline: .now() + 5 * 60) {
                     self.checkSleepStateAndSchedule(alarm: alarm)
                 }
             }
         }
     }
+    
     func checkIfPermissionGranted() -> Bool {
         let sleepType = HKObjectType.categoryType(forIdentifier: .sleepAnalysis)!
         let status = healthStore.authorizationStatus(for: sleepType)
-        print(status.rawValue)
-        if status == .sharingAuthorized { return true }
-        return false
+        print("HealthKit authorization status: \(status.rawValue)")
+        return status == .sharingAuthorized
     }
-    
 }
-
 

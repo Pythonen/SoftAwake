@@ -9,10 +9,14 @@ import SwiftUI
 
 @main
 struct SoftAwakeApp: App {
+    @StateObject var alarmManager = AlarmManager()
+
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     var body: some Scene {
         WindowGroup {
             ClockView()
+                .environmentObject(alarmManager)
+
         }
     }
 }

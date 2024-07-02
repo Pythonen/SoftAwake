@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct ClockView: View {
-    @StateObject private var alarmManager = AlarmManager()
+    @EnvironmentObject var alarmManager: AlarmManager
     @State private var successAuth = false
     
     var body: some View {
@@ -21,8 +21,8 @@ struct ClockView: View {
                     Text("Set a time for soft awakening")
                 }
                 .padding()
-                ClockInput()
-                NavigationLink(destination: AlarmListView()) {
+                ClockInput().environmentObject(alarmManager)
+                NavigationLink(destination: AlarmListView().environmentObject(alarmManager)) {
                     HStack {
                         Image(systemName: "arrow.right.circle.fill")
                         Text("Or go to your alarms")

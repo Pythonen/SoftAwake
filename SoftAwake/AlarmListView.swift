@@ -9,21 +9,21 @@ import Foundation
 import SwiftUI
 
 struct AlarmListView: View {
-    @StateObject private var alarmManager = AlarmManager()
+    @EnvironmentObject var alarmManager: AlarmManager
 
     var body: some View {
-            NavigationView {
-                List {
-                    ForEach(alarmManager.alarms) { alarm in
-                        AlarmRow(alarm: alarm, toggleAction: {
-                            alarmManager.toggleAlarm(alarm)
-                        })
-                    }
-                    .onDelete(perform: alarmManager.deleteAlarm)
+        NavigationView {
+            List {
+                ForEach(alarmManager.alarms) { alarm in
+                    AlarmRow(alarm: alarm, toggleAction: {
+                        alarmManager.toggleAlarm(alarm)
+                    })
                 }
+                .onDelete(perform: alarmManager.deleteAlarm)
             }
-            .navigationTitle("Alarms")
         }
+        .navigationTitle("Alarms")
+    }
 }
 
 struct AlarmRow: View {

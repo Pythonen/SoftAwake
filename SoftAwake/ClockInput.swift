@@ -58,45 +58,34 @@ struct CustomNumberPicker: View {
 struct ClockInput: View {
     @State private var hours: Int = 0
     @State private var minutes: Int = 0
-    @State private var wakeUpTime: String = UserDefaults.standard.string(forKey: "wakeuptime") ?? ""
-    @State private var isListView = false
-    @StateObject private var alarmManager = AlarmManager()
+    @EnvironmentObject private var alarmManager: AlarmManager
 
-    
     var body: some View {
-            VStack {
+        VStack {
+            HStack {
+                CustomNumberPicker(selectedNumber: $hours, range: 0...23)
+                    .frame(width: 100, height: 200)
+                
+                Text(":")
+                    .font(.largeTitle)
+                CustomNumberPicker(selectedNumber: $minutes, range: 0...59)
+                    .frame(width: 100, height: 200)
+            }
+            NavigationLink(destination: AlarmListView()) {
                 HStack {
-                    CustomNumberPicker(selectedNumber: $hours, range: 0...23)
-                        .frame(width: 100, height: 200)
-                    
-                    Text(":")
-                        .font(.largeTitle)
-                    CustomNumberPicker(selectedNumber: $minutes, range: 0...59)
-                        .frame(width: 100, height: 200)
+                    Image(systemName: "bed.double.fill")
+                    Text("Set your wake up time")
                 }
-                NavigationLink(destination: AlarmListView()) {
-                                HStack {
-                                    Image(systemName: "bed.double.fill")
-                                    Text("Set your wake up time")
-                                }
-                                .padding()
-                                .foregroundColor(.white)
-                                .background(Color.blue)
-                                .cornerRadius(10)
-                            }
-                            .simultaneousGesture(TapGesture().onEnded {
-                                alarmManager.addAlarm(hours: hours, minutes: minutes)
-                            })
-                            .buttonStyle(.borderedProminent)
-                            .padding()
-               
-                }
-    }
-}
-
-
-struct ContentView_Previews: PreviewProvider {
-    static var previews: some View {
-        ClockInput()
+                .padding()
+                .foregroundColor(.white)
+                .background(Color.blue)
+                .cornerRadius(10)
+            }
+            .simultaneousGesture(TapGesture().onEnded {
+                alarmManager.addAlarm(hours: hours, minutes: minutes)
+            })
+            .buttonStyle(.borderedProminent)
+            .padding()
+        }
     }
 }
