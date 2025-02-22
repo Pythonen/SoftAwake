@@ -38,7 +38,7 @@ Contributions to SoftAwake are welcome from developers, designers, and anyone in
 
 ## License
 
-SoftAwake is released under the MIT License. See the LICENSE file for details.
+SoftAwake is released under the MIT License. See the [LICENSE](https://github.com/Pythonen/SoftAwake/blob/main/LICENSE) file for details.
 
 ## Contact
 
