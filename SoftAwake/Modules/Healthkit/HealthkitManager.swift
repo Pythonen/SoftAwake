@@ -70,7 +70,7 @@ class HealthKitManager: ObservableObject {
             TimeZone.current
         }
         calendar.timeZone = getCurrentTimeZone()
-
+        
         let now = Date()
         print("Current date: \(now)")
         print("Time zone: \(calendar.timeZone)")

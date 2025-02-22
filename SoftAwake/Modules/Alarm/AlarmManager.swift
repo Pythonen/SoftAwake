@@ -59,40 +59,40 @@ class AlarmManager: ObservableObject {
         playAlarm()
         // Post notification for UI update
         let content = UNMutableNotificationContent()
-                content.title = "Wake Up"
-                content.body = "Time to wake up!"
+        content.title = "Wake Up"
+        content.body = "Time to wake up!"
         content.userInfo = ["alarmId": alarm.id.uuidString]
-                
-                let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: nil)
-                notificationCenter.add(request) { error in
-                    if let error = error {
-                        print("Error triggering alarm: \(error.localizedDescription)")
-                    } else {
-                        print("Triggered alarm")
-                    }
-                }
+        
+        let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: nil)
+        notificationCenter.add(request) { error in
+            if let error = error {
+                print("Error triggering alarm: \(error.localizedDescription)")
+            } else {
+                print("Triggered alarm")
+            }
+        }
     }
     
     func playAlarm() {
-            guard let url = Bundle.main.url(forResource: "alarm", withExtension: "mp3") else {
-                print("Alarm sound file not found")
-                return
-            }
+        guard let url = Bundle.main.url(forResource: "alarm", withExtension: "mp3") else {
+            print("Alarm sound file not found")
+            return
+        }
+        
+        do {
+            // Create a new player for the alarm sound
+            audioPlayer = try AVAudioPlayer(contentsOf: url)
+            audioPlayer?.numberOfLoops = -1 // Loop indefinitely
+            audioPlayer?.setVolume(1.0, fadeDuration: 0.0)
+            audioPlayer?.prepareToPlay()
             
-            do {
-                // Create a new player for the alarm sound
-                audioPlayer = try AVAudioPlayer(contentsOf: url)
-                audioPlayer?.numberOfLoops = -1 // Loop indefinitely
-                audioPlayer?.setVolume(1.0, fadeDuration: 0.0)
-                audioPlayer?.prepareToPlay()
-                
-                DispatchQueue.global().async { [weak self] in
-                    let played = self?.audioPlayer?.play() ?? false
-                    print("Alarm sound playback started: \(played)")
-                }
-            } catch {
-                print("Failed to play alarm: \(error)")
+            DispatchQueue.global().async { [weak self] in
+                let played = self?.audioPlayer?.play() ?? false
+                print("Alarm sound playback started: \(played)")
             }
+        } catch {
+            print("Failed to play alarm: \(error)")
+        }
     }
     
     func stopAlarm(alarm: Alarm) {
@@ -104,7 +104,7 @@ class AlarmManager: ObservableObject {
             cancelSleepDataFetch(for: alarms[current])
             toggleAlarm(alarms[current])
         }
-            
+        
     }
     
     func addAlarm(hours: Int, minutes: Int) {
