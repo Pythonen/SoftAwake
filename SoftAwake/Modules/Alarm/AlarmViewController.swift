@@ -4,9 +4,11 @@ import SwiftUICore
 class AlarmViewController: UIViewController {
     private var backgroundTask: UIBackgroundTaskIdentifier = .invalid
     private let alarmManager: AlarmManager
+    private let alarm: Alarm
     
-    init(alarmManager: AlarmManager) {
+    init(alarmManager: AlarmManager, alarm: Alarm) {
             self.alarmManager = alarmManager
+            self.alarm = alarm
             super.init(nibName: nil, bundle: nil)
         }
     required init?(coder: NSCoder) {
@@ -22,7 +24,7 @@ class AlarmViewController: UIViewController {
             
             let stopButton = UIButton(configuration: .filled())
             stopButton.setTitle("Stop Alarm", for: .normal)
-        stopButton.addTarget(self, action: #selector(dismissAlarm), for: .touchUpInside)
+            stopButton.addTarget(self, action: #selector(dismissAlarm), for: .touchUpInside)
             
             view.addSubview(stopButton)
             stopButton.translatesAutoresizingMaskIntoConstraints = false
@@ -48,7 +50,7 @@ class AlarmViewController: UIViewController {
     }
     
     @objc func dismissAlarm() {
-        alarmManager.stopAlarm()
+        alarmManager.stopAlarm(alarm: self.alarm)
         dismiss(animated: true)
     }
     

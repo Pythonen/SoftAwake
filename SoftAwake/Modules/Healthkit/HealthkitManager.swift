@@ -106,7 +106,7 @@ class HealthKitManager: ObservableObject {
             if samples.last(where: { $0.value == HKCategoryValueSleepAnalysis.asleepCore.rawValue || $0.value == HKCategoryValueSleepAnalysis.asleepUnspecified.rawValue }) != nil {
                 // Light sleep found, play alarm
                 print("Light sleep sample found: \(samples)")
-                self.alarmManager.triggerAlarm()
+                self.alarmManager.triggerAlarm(alarm: alarm)
                 work.cancel()
             } else {
                 // No light sleep found, reschedule after a short interval

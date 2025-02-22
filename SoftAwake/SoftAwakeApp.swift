@@ -60,15 +60,15 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
                               willPresent notification: UNNotification,
                               withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
         completionHandler([.banner, .sound])
-        presentAlarmView()
+        presentAlarmView(notification: notification)
     }
-    func userNotificationCenter(_ center: UNUserNotificationCenter,
-                              didReceive response: UNNotificationResponse,
-                              withCompletionHandler completionHandler: @escaping () -> Void) {
-        presentAlarmView()
-        completionHandler()
-    }
-    private func presentAlarmView() {
+//    func userNotificationCenter(_ center: UNUserNotificationCenter,
+//                              didReceive response: UNNotificationResponse,
+//                              withCompletionHandler completionHandler: @escaping () -> Void) {
+//        presentAlarmView(notification: )
+//        completionHandler()
+//    }
+    private func presentAlarmView(notification: UNNotification? = nil) {
         DispatchQueue.main.async {
             guard let rootViewController = self.window?.rootViewController else { return }
             
@@ -76,8 +76,14 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
                 print("Error: alarmManager is nil in AppDelegate")
                 return
             }
-            
-            let alarmVC = AlarmViewController(alarmManager: alarmManager)
+            var triggeringAlarm: Alarm?
+            if let notification = notification,
+                       let alarmIdString = notification.request.content.userInfo["alarmId"] as? String,
+                       let alarmId = UUID(uuidString: alarmIdString) {
+                        triggeringAlarm = alarmManager.alarms.first { $0.id == alarmId }
+                    }
+            let alarm = triggeringAlarm ?? alarmManager.alarms.first { $0.isOn } ?? alarmManager.alarms[0]
+            let alarmVC = AlarmViewController(alarmManager: alarmManager, alarm: alarm)
             alarmVC.modalPresentationStyle = .fullScreen
             rootViewController.present(alarmVC, animated: true)
         }

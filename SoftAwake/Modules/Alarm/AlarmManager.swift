@@ -48,19 +48,20 @@ class AlarmManager: ObservableObject {
             let timeInterval = nextAlarmDate.timeIntervalSinceNow
             if timeInterval > 0 {
                 let timer = Timer.scheduledTimer(withTimeInterval: timeInterval, repeats: false) { [weak self] _ in
-                    self?.triggerAlarm()
+                    self?.triggerAlarm(alarm: alarm)
                 }
                 timers[alarm.id] = timer
             }
         }
     }
     
-    func triggerAlarm() {
+    func triggerAlarm(alarm: Alarm) {
         playAlarm()
         // Post notification for UI update
         let content = UNMutableNotificationContent()
                 content.title = "Wake Up"
                 content.body = "Time to wake up!"
+        content.userInfo = ["alarmId": alarm.id.uuidString]
                 
                 let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: nil)
                 notificationCenter.add(request) { error in
@@ -94,28 +95,16 @@ class AlarmManager: ObservableObject {
             }
     }
     
-    func getCurrentTimeString() -> String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "HH:mm" // 24-hour format, e.g., "07:30" or "14:45"
-        return formatter.string(from: Date())
-    }
-    
-    // This is horrific and you're going to regret this in the future... but works for now :)
-    func getCurrentAlarmIndex() -> Int? {
-            let currentTime = getCurrentTimeString()
-            return alarms.firstIndex { $0.isOn && $0.key == currentTime }
-    }
-    
-    func stopAlarm() {
+    func stopAlarm(alarm: Alarm) {
         print("stopAlarm called")
-            audioPlayer?.stop()
-            print("Alarm sound playback stopped")
-            audioPlayer = nil
-            if let index = getCurrentAlarmIndex() {
-                print("Cancelling sleep data fetch for alarm")
-                cancelSleepDataFetch(for: alarms[index])
-                toggleAlarm(alarms[index])
-            }
+        audioPlayer?.stop()
+        print("Alarm sound playback stopped")
+        audioPlayer = nil
+        if let current = alarms.firstIndex(where: { $0.id == alarm.id }){
+            cancelSleepDataFetch(for: alarms[current])
+            toggleAlarm(alarms[current])
+        }
+            
     }
     
     func addAlarm(hours: Int, minutes: Int) {
