@@ -41,7 +41,6 @@ struct ClockView: View {
                 .buttonStyle(.borderedProminent)
                 .padding()
             }
-            
             // Button for requesting HealthKit authorization
             Button("Grant access to your sleep data") {
                 alarmManager.healthKitManager.requestAuthorization { success in

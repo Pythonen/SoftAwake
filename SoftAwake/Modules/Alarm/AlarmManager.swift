@@ -1,15 +1,15 @@
-//
-//  AlarmManageer.swift
-//  SoftAwake
-//
-//  Created by Aleksi Puttonen on 27.6.2024.
-//
-
+///
+///  AlarmManageer.swift
+///  SoftAwake
+///
+///  Created by Aleksi Puttonen on 27.6.2024.
+///
 import Foundation
 import UserNotifications
+import AVFoundation
+import UIKit
 
 class AlarmManager: ObservableObject {
-    
     var timers: [UUID: Timer] = [:]
     @Published var alarms: [Alarm] {
         didSet {
@@ -18,7 +18,9 @@ class AlarmManager: ObservableObject {
     }
     
     private let userDefaults = UserDefaults.standard
-    let notificationCenter = UNUserNotificationCenter.current()
+    private var audioPlayer: AVAudioPlayer?
+    private var backgroundTask: UIBackgroundTaskIdentifier = .invalid
+    
     lazy var healthKitManager: HealthKitManager = {
         return HealthKitManager(alarmManager: self)
     }()
@@ -26,6 +28,64 @@ class AlarmManager: ObservableObject {
     init() {
         self.alarms = AlarmManager.loadAlarms()
         scheduleAllAlarms()
+    }
+    
+    func scheduleAlarm(_ alarm: Alarm) {
+        guard alarm.isOn else { return }
+        
+        // Calculate the next alarm time
+        if let (hours, minutes) = AlarmManager.parseTimeString(alarm.value) {
+            let calendar = Calendar.current
+            var components = DateComponents()
+            components.hour = hours
+            components.minute = minutes
+            
+            guard let nextAlarmDate = calendar.nextDate(after: Date(), matching: components, matchingPolicy: .nextTime) else {
+                return
+            }
+            
+            // Schedule the timer for this alarm
+            let timeInterval = nextAlarmDate.timeIntervalSinceNow
+            if timeInterval > 0 {
+                let timer = Timer.scheduledTimer(withTimeInterval: timeInterval, repeats: false) { [weak self] _ in
+                    self?.triggerAlarm()
+                }
+                timers[alarm.id] = timer
+            }
+        }
+    }
+    
+    func triggerAlarm() {
+        playAlarm()
+        // Post notification for UI update
+        NotificationCenter.default.post(name: NSNotification.Name("ShowAlarmView"), object: nil)
+    }
+    
+    func playAlarm() {
+            guard let url = Bundle.main.url(forResource: "alarm", withExtension: "mp3") else {
+                print("Alarm sound file not found")
+                return
+            }
+            
+            do {
+                // Create a new player for the alarm sound
+                audioPlayer = try AVAudioPlayer(contentsOf: url)
+                audioPlayer?.numberOfLoops = -1 // Loop indefinitely
+                audioPlayer?.volume = 1.0
+                audioPlayer?.prepareToPlay()
+                
+                DispatchQueue.global().async { [weak self] in
+                    let played = self?.audioPlayer?.play() ?? false
+                    print("Alarm sound playback started: \(played)")
+                }
+            } catch {
+                print("Failed to play alarm: \(error)")
+            }
+    }
+    
+    func stopAlarm() {
+        audioPlayer?.stop()
+        audioPlayer = nil
     }
     
     func addAlarm(hours: Int, minutes: Int) {
@@ -38,7 +98,6 @@ class AlarmManager: ObservableObject {
     func deleteAlarm(at offsets: IndexSet) {
         offsets.forEach { index in
             let alarm = alarms[index]
-            notificationCenter.removePendingNotificationRequests(withIdentifiers: [alarm.id.uuidString])
             alarms.remove(at: index)
             cancelSleepDataFetch(for: alarm)
         }
@@ -50,42 +109,14 @@ class AlarmManager: ObservableObject {
             if alarms[index].isOn {
                 scheduleAlarm(alarms[index])
             } else {
-                notificationCenter.removePendingNotificationRequests(withIdentifiers: [alarms[index].id.uuidString])
                 cancelSleepDataFetch(for: alarms[index])
             }
         }
     }
     
     private func scheduleAllAlarms() {
-        for alarm in alarms {
-            if alarm.isOn {
-                scheduleAlarm(alarm)
-            }
-        }
-    }
-    
-    private func scheduleAlarm(_ alarm: Alarm) {
-        healthKitManager.scheduleFetchSleepData(alarm: alarm)
-        let content = UNMutableNotificationContent()
-        content.title = "Alarm"
-        content.body = "Time to wake up!"
-        content.sound = .defaultRingtone
-        content.categoryIdentifier = "Alarm"
-        if let (hours, minutes) = AlarmManager.parseTimeString(alarm.value) {
-            var dateComponents = DateComponents()
-            dateComponents.hour = hours
-            dateComponents.minute = minutes
-            
-            let trigger = UNCalendarNotificationTrigger(dateMatching: dateComponents, repeats: true)
-            let request = UNNotificationRequest(identifier: alarm.id.uuidString, content: content, trigger: trigger)
-            
-            notificationCenter.add(request) { error in
-                if let error = error {
-                    print("Error scheduling alarm: \(error.localizedDescription)")
-                } else {
-                    print("Scheduled alarm: \(alarm)")
-                }
-            }
+        for alarm in alarms where alarm.isOn {
+            scheduleAlarm(alarm)
         }
     }
     
@@ -100,40 +131,22 @@ class AlarmManager: ObservableObject {
     private func saveAlarms() {
         if let data = try? JSONEncoder().encode(alarms) {
             userDefaults.set(data, forKey: "alarms")
-        }     }
+        }
+    }
     
     static func parseTimeString(_ timeString: String) -> (hours: Int, minutes: Int)? {
         let components = timeString.split(separator: ":")
-        if components.count == 2,
-           let hours = Int(components[0]),
-           let minutes = Int(components[1]) {
-            return (hours, minutes)
-        } else {
+        guard components.count == 2,
+              let hours = Int(components[0]),
+              let minutes = Int(components[1]) else {
             return nil
         }
-    }
-    
-    func triggerAlarm(alarm: Alarm) {
-        let content = UNMutableNotificationContent()
-        content.title = "Wake Up"
-        content.body = "Time to wake up!"
-        content.sound = .default
-        
-        let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: nil)
-        cancelSleepDataFetch(for: alarm)
-        notificationCenter.add(request) { error in
-            if let error = error {
-                print("Error triggering alarm: \(error.localizedDescription)")
-            } else {
-                print("Triggered alarm: \(alarm)")
-            }
-        }
+        return (hours, minutes)
     }
     
     func cancelSleepDataFetch(for alarm: Alarm) {
-        if let timer = timers[alarm.id] {
-            timer.invalidate()
-            timers.removeValue(forKey: alarm.id)
-        }
+        timers[alarm.id]?.invalidate()
+        timers[alarm.id] = nil
     }
 }
+

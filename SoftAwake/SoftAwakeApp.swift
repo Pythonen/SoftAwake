@@ -1,44 +1,59 @@
-//
-//  SoftAwakeApp.swift
-//  SoftAwake
-//
-//  Created by Aleksi Puttonen on 24.6.2024.
-//
-
 import SwiftUI
+import UserNotifications
+import AVFAudio
 
 @main
 struct SoftAwakeApp: App {
     @StateObject var alarmManager = AlarmManager()
-
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+    
     var body: some Scene {
         WindowGroup {
             ClockView()
                 .environmentObject(alarmManager)
-
+                .onAppear {
+                    // Pass the alarmManager to the AppDelegate
+                    appDelegate.alarmManager = alarmManager
+                    
+                    // Set the window from the active scene
+                    if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+                       let window = windowScene.windows.first {
+                        appDelegate.window = window
+                    }
+                }
         }
     }
 }
 
-// App Delegate to Request Notification Permissions
-class AppDelegate: NSObject, UIApplicationDelegate {
-    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
-        requestNotificationPermissions()
-        return true
-    }
+
+class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDelegate {
+    var window: UIWindow?
+    var alarmManager: AlarmManager?
     
-    private func requestNotificationPermissions() {
-        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { granted, error in
-            if granted {
-                print("Notification permission granted.")
-            } else if let error = error {
-                print("Error requesting notification permission: \(error.localizedDescription)")
-            }
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        UNUserNotificationCenter.current().delegate = self
+        setupNotifications()
+        do {
+            let session = AVAudioSession.sharedInstance()
+            try session.setCategory(.playback, mode: .default)
+            print("Playback OK")
+            try session.setActive(true)
+            print("Playback active")
+            return true
+        } catch {
+            print("Failed to set audio session \(error)")
+            return false
         }
     }
-    func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
-        // Play notification sound
-        completionHandler([.sound])
+    
+    private func setupNotifications() {
+        let notificationCenter = UNUserNotificationCenter.current()
+        notificationCenter.requestAuthorization(options: [.alert, .badge]) { granted, error in
+            if granted {
+                print("Notification permission granted")
+            } else if let error = error {
+                print("Notification permission denied: \(error.localizedDescription)")
+            }
+        }
     }
 }
