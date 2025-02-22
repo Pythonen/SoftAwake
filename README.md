@@ -42,4 +42,4 @@ SoftAwake is released under the MIT License. See the LICENSE file for details.
 
 ## Contact
 
-Got questions, ideas, or feedback? Feel free to open an issue on GitHub or email me at [aleksi.puttonen@gmail.com (mailto:aleksi.puttonen@gmail.com)].
+Got questions, ideas, or feedback? Feel free to open an issue on GitHub or email me at [aleksi.puttonen@gmail.com](mailto:aleksi.puttonen@gmail.com).
