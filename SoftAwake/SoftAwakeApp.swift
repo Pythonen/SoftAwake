@@ -35,7 +35,7 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
         setupNotifications()
         do {
             let session = AVAudioSession.sharedInstance()
-            try session.setCategory(.playback, mode: .default)
+            try session.setCategory(.playback, mode: .default, options: .duckOthers)
             print("Playback OK")
             try session.setActive(true)
             print("Playback active")
@@ -54,6 +54,32 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
             } else if let error = error {
                 print("Notification permission denied: \(error.localizedDescription)")
             }
+        }
+    }
+    func userNotificationCenter(_ center: UNUserNotificationCenter,
+                              willPresent notification: UNNotification,
+                              withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+        completionHandler([.banner, .sound])
+        presentAlarmView()
+    }
+    func userNotificationCenter(_ center: UNUserNotificationCenter,
+                              didReceive response: UNNotificationResponse,
+                              withCompletionHandler completionHandler: @escaping () -> Void) {
+        presentAlarmView()
+        completionHandler()
+    }
+    private func presentAlarmView() {
+        DispatchQueue.main.async {
+            guard let rootViewController = self.window?.rootViewController else { return }
+            
+            guard let alarmManager = self.alarmManager else {
+                print("Error: alarmManager is nil in AppDelegate")
+                return
+            }
+            
+            let alarmVC = AlarmViewController(alarmManager: alarmManager)
+            alarmVC.modalPresentationStyle = .fullScreen
+            rootViewController.present(alarmVC, animated: true)
         }
     }
 }

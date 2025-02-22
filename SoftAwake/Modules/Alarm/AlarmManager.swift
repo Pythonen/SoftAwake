@@ -18,8 +18,8 @@ class AlarmManager: ObservableObject {
     }
     
     private let userDefaults = UserDefaults.standard
+    let notificationCenter = UNUserNotificationCenter.current()
     private var audioPlayer: AVAudioPlayer?
-    private var backgroundTask: UIBackgroundTaskIdentifier = .invalid
     
     lazy var healthKitManager: HealthKitManager = {
         return HealthKitManager(alarmManager: self)
@@ -32,7 +32,7 @@ class AlarmManager: ObservableObject {
     
     func scheduleAlarm(_ alarm: Alarm) {
         guard alarm.isOn else { return }
-        
+        healthKitManager.scheduleFetchSleepData(alarm: alarm)
         // Calculate the next alarm time
         if let (hours, minutes) = AlarmManager.parseTimeString(alarm.value) {
             let calendar = Calendar.current
@@ -58,7 +58,18 @@ class AlarmManager: ObservableObject {
     func triggerAlarm() {
         playAlarm()
         // Post notification for UI update
-        NotificationCenter.default.post(name: NSNotification.Name("ShowAlarmView"), object: nil)
+        let content = UNMutableNotificationContent()
+                content.title = "Wake Up"
+                content.body = "Time to wake up!"
+                
+                let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: nil)
+                notificationCenter.add(request) { error in
+                    if let error = error {
+                        print("Error triggering alarm: \(error.localizedDescription)")
+                    } else {
+                        print("Triggered alarm")
+                    }
+                }
     }
     
     func playAlarm() {
@@ -71,7 +82,7 @@ class AlarmManager: ObservableObject {
                 // Create a new player for the alarm sound
                 audioPlayer = try AVAudioPlayer(contentsOf: url)
                 audioPlayer?.numberOfLoops = -1 // Loop indefinitely
-                audioPlayer?.volume = 1.0
+                audioPlayer?.setVolume(1.0, fadeDuration: 0.0)
                 audioPlayer?.prepareToPlay()
                 
                 DispatchQueue.global().async { [weak self] in
@@ -83,9 +94,28 @@ class AlarmManager: ObservableObject {
             }
     }
     
+    func getCurrentTimeString() -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "HH:mm" // 24-hour format, e.g., "07:30" or "14:45"
+        return formatter.string(from: Date())
+    }
+    
+    // This is horrific and you're going to regret this in the future... but works for now :)
+    func getCurrentAlarmIndex() -> Int? {
+            let currentTime = getCurrentTimeString()
+            return alarms.firstIndex { $0.isOn && $0.key == currentTime }
+    }
+    
     func stopAlarm() {
-        audioPlayer?.stop()
-        audioPlayer = nil
+        print("stopAlarm called")
+            audioPlayer?.stop()
+            print("Alarm sound playback stopped")
+            audioPlayer = nil
+            if let index = getCurrentAlarmIndex() {
+                print("Cancelling sleep data fetch for alarm")
+                cancelSleepDataFetch(for: alarms[index])
+                toggleAlarm(alarms[index])
+            }
     }
     
     func addAlarm(hours: Int, minutes: Int) {
